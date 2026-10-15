@@ -13,6 +13,9 @@
     P / ESC  暂停 / 继续
     R       重新开始
     Alt+W   关闭游戏
+
+游戏流程：启动后先显示开始界面，点击「开始游戏」按钮（或按回车）进入游戏；
+游戏进行中可点击右侧面板底部的「退出」按钮或按 Alt+W 关闭窗口。
 """
 
 import math
@@ -261,6 +264,7 @@ class TetrisGUI:
 
         self.game = Tetris()
         self.particles = []        # 消行粒子特效
+        self.started = False       # 是否已进入游戏（点击“开始游戏”后变 True）
 
         board_w = COLUMNS * CELL
         board_h = ROWS * CELL
@@ -268,13 +272,16 @@ class TetrisGUI:
                                 bg="#0f0f14", highlightthickness=0)
         self.canvas.grid(row=0, column=0, padx=10, pady=10)
 
-        self.panel = tk.Canvas(root, width=PANEL_W, height=board_h,
+        # 面板下方多留一截，用来放置“退出”按钮
+        self.panel = tk.Canvas(root, width=PANEL_W, height=board_h + 70,
                                bg="#191921", highlightthickness=0)
         self.panel.grid(row=0, column=1, padx=(0, 10), pady=10)
 
         self._build_panel_text()
+        self._build_quit_button()
         self._bind_keys()
         self._draw_static_grid()
+        self._show_start_screen()
         self._loop()
         self._render()
 
@@ -295,18 +302,64 @@ class TetrisGUI:
 
     # ---------- 键盘 ----------
     def _bind_keys(self):
-        self.root.bind("<Left>", lambda e: self.game.move(-1) or self._render())
-        self.root.bind("<Right>", lambda e: self.game.move(1) or self._render())
-        self.root.bind("<Down>", lambda e: (self.game.soft_drop(), self._render()))
-        self.root.bind("<space>", lambda e: (self.game.hard_drop(), self._render()))
-        self.root.bind("<Up>", lambda e: (self.game.rotate(1), self._render()))
-        self.root.bind("x", lambda e: (self.game.rotate(1), self._render()))
-        self.root.bind("z", lambda e: (self.game.rotate(-1), self._render()))
-        self.root.bind("p", lambda e: (self.game.toggle_pause(), self._render()))
-        self.root.bind("r", lambda e: (self.game.reset(), self._render()))
-        self.root.bind("<Escape>", lambda e: (self.game.toggle_pause(), self._render()))
+        self.root.bind("<Left>", lambda e: self._safe(lambda: self.game.move(-1)))
+        self.root.bind("<Right>", lambda e: self._safe(lambda: self.game.move(1)))
+        self.root.bind("<Down>", lambda e: self._safe(lambda: self.game.soft_drop()))
+        self.root.bind("<space>", lambda e: self._safe(lambda: self.game.hard_drop()))
+        self.root.bind("<Up>", lambda e: self._safe(lambda: self.game.rotate(1)))
+        self.root.bind("x", lambda e: self._safe(lambda: self.game.rotate(1)))
+        self.root.bind("z", lambda e: self._safe(lambda: self.game.rotate(-1)))
+        self.root.bind("p", lambda e: self._safe(lambda: self.game.toggle_pause()))
+        self.root.bind("r", lambda e: self._safe(lambda: self.game.reset()))
+        self.root.bind("<Escape>", lambda e: self._safe(lambda: self.game.toggle_pause()))
+        self.root.bind("<Return>", lambda e: self._start_game())
         self.root.bind("<Alt-Key-w>", lambda e: self.root.destroy())
         self.root.bind("<Alt-Key-W>", lambda e: self.root.destroy())
+
+    def _safe(self, fn):
+        """仅在已进入游戏后执行操作，并刷新画面。"""
+        if self.started:
+            fn()
+        self._render()
+
+    def _build_quit_button(self):
+        """在右侧面板底部放置“退出”按钮。"""
+        btn = tk.Button(self.panel, text="退出", font=F(14, "bold"),
+                        bg="#c0392b", fg="#ffffff", activebackground="#e74c3c",
+                        relief="flat", cursor="hand2",
+                        command=self.root.destroy)
+        self.panel.create_window(PANEL_W // 2, ROWS * CELL + 35,
+                                 window=btn, width=120, height=34)
+
+    def _show_start_screen(self):
+        """显示开始界面覆盖层（标题 + 开始游戏按钮 + 操作提示）。"""
+        overlay = tk.Frame(self.root, bg="#101018")
+        overlay.place(relx=0, rely=0, relwidth=1, relheight=1)
+        tk.Label(overlay, text="俄罗斯方块", font=F(36, "bold"),
+                 fg="#ffffff", bg="#101018").place(relx=0.5, rely=0.34, anchor="center")
+        tk.Label(overlay, text="T E T R I S", font=F(15),
+                 fg="#7f77dd", bg="#101018").place(relx=0.5, rely=0.44, anchor="center")
+        start = tk.Button(overlay, text="开始游戏", font=F(18, "bold"),
+                          bg="#378ADD", fg="#ffffff", activebackground="#5a9ee6",
+                          relief="flat", cursor="hand2", width=12, height=1,
+                          command=self._start_game)
+        start.place(relx=0.5, rely=0.62, anchor="center")
+        tk.Label(overlay, text="← → 移动    ↓ 软降    空格 硬降", font=F(12),
+                 fg="#9a9aa8", bg="#101018").place(relx=0.5, rely=0.74, anchor="center")
+        tk.Label(overlay, text="↑ / X 旋转    P 暂停    Alt+W 退出", font=F(12),
+                 fg="#9a9aa8", bg="#101018").place(relx=0.5, rely=0.79, anchor="center")
+        self.overlay = overlay
+
+    def _start_game(self):
+        """点击开始游戏按钮 / 回车：移除覆盖层，进入游戏。"""
+        if self.started:
+            return
+        if hasattr(self, "overlay"):
+            self.overlay.destroy()
+            del self.overlay
+        self.started = True
+        self.game.reset()
+        self._render()
 
     # ---------- 绘制 ----------
     def _draw_static_grid(self):
@@ -463,19 +516,20 @@ class TetrisGUI:
             dt = now - last
             if dt > 200:          # 防止切后台回来后一次性大跳
                 dt = 200
-            g = self.game
-            # 消行发生：生成粒子
-            if g.pending_clears:
-                self.spawn_clear_particles(g.pending_clears)
-                g.pending_clears = []
-            prev_over = g.game_over
-            g.tick(dt)
-            self._update_particles(dt)
-            if g.game_over and not prev_over:
-                self._render()
-                messagebox.showinfo("游戏结束", f"最终分数：{g.score}\n消除行数：{g.lines}")
-            else:
-                self._render()
+            if self.started:
+                g = self.game
+                # 消行发生：生成粒子
+                if g.pending_clears:
+                    self.spawn_clear_particles(g.pending_clears)
+                    g.pending_clears = []
+                prev_over = g.game_over
+                g.tick(dt)
+                self._update_particles(dt)
+                if g.game_over and not prev_over:
+                    self._render()
+                    messagebox.showinfo("游戏结束", f"最终分数：{g.score}\n消除行数：{g.lines}")
+                else:
+                    self._render()
         self._last_ms = now
         self.root.after(30, self._loop)
 
