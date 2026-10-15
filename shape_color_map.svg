@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 258" width="680" height="258" role="img">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 214" width="680" height="214" role="img">
   <title>俄罗斯方块七种形状与颜色对应</title>
   <desc>每种形状固定一种颜色：I青、O黄、T紫、S绿、Z红、J蓝、L橙。形状与颜色一一绑定，因此不存在蓝色加T形状的方块。</desc>
   <text x="340" y="34" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="500" fill="#1a1a1a">7 种方块：形状 ↔ 颜色 一一对应</text>
@@ -59,6 +59,4 @@
   <rect x="586" y="116" width="16" height="16" rx="3" fill="#F0A000"/>
   <text x="586" y="180" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="500" fill="#1a1a1a">L</text>
   <text x="586" y="200" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#555">橙色</text>
-
-  <text x="340" y="240" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#444">T 是紫色、J 是蓝色 —— 形状与颜色绑定，所以没有「蓝色 + T 形状」的方块</text>
 </svg>
