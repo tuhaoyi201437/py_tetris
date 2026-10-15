@@ -32,6 +32,7 @@ from tkinter import messagebox
 COLUMNS = 10          # 游戏区列数
 ROWS = 20             # 游戏区行数
 CELL = 30             # 每个格子像素大小
+CELL_RADIUS = 6       # 方块格子的圆角半径（切角大小）
 PANEL_W = 180         # 右侧信息面板宽度
 
 # 7 种方块颜色 (Tetromino)
@@ -366,8 +367,7 @@ class TetrisGUI:
         self.panel.create_text(PANEL_W // 2, 18, text="下一个",
                                fill=THEMES[self.theme]["title"],
                                font=F(14, "bold"), tags="title")
-        self.next_rects = [self.panel.create_rectangle(0, 0, 0, 0, tags="np")
-                           for _ in range(4)]
+        self.next_rects = []      # 预览方块（圆角多边形），每帧重建
         self.score_var = self.panel.create_text(PANEL_W // 2, 200, text="",
                                                 fill="#ffffff", font=F(16))
         self.level_var = self.panel.create_text(PANEL_W // 2, 260, text="",
@@ -418,10 +418,10 @@ class TetrisGUI:
             which="quit", command=self.root.destroy, font=F(14, "bold"))
 
     # ---------- 圆角按钮 ----------
-    def _round_rect(self, canvas, x0, y0, x1, y1, r, fill="#000000"):
-        """返回一个圆角矩形多边形（用于绘制圆角按钮）。"""
+    def _round_rect(self, canvas, x0, y0, x1, y1, r, fill="#000000",
+                    outline=None, width=1, tags=None, steps=8):
+        """返回一个圆角矩形多边形（用于绘制圆角按钮与方块格子）。"""
         r = min(r, (x1 - x0) / 2, (y1 - y0) / 2)
-        steps = 8
         pts = []
         arcs = [
             (x0 + r, y0 + r, math.pi, 1.5 * math.pi),        # 左上
@@ -433,7 +433,11 @@ class TetrisGUI:
             for i in range(steps + 1):
                 a = a0 + (a1 - a0) * (i / steps)
                 pts.append((cx + r * math.cos(a), cy + r * math.sin(a)))
-        return canvas.create_polygon(pts, fill=fill, outline=fill)
+        kw = {"fill": fill, "outline": fill if outline is None else outline,
+              "width": width}
+        if tags is not None:
+            kw["tags"] = tags
+        return canvas.create_polygon(pts, **kw)
 
     def _make_round_button(self, canvas, cx, cy, w, h, text="", which=None,
                            fill=None, fg=None, active=None, command=None,
@@ -669,9 +673,11 @@ class TetrisGUI:
             for (x, y) in g.current.cells():
                 yy = y + gy
                 if yy >= 0:
-                    self.canvas.create_rectangle(
-                        x * CELL + 2, yy * CELL + 2, x * CELL + CELL - 2, yy * CELL + CELL - 2,
-                        outline=hex_color(self._color_of(g.current.name)), width=1, tags="ghost")
+                    self._round_rect(
+                        self.canvas, x * CELL + 2, yy * CELL + 2,
+                        x * CELL + CELL - 2, yy * CELL + CELL - 2, CELL_RADIUS - 2,
+                        fill="", outline=hex_color(self._color_of(g.current.name)),
+                        width=1, tags="ghost", steps=3)
         # 已固定方块
         for r in range(ROWS):
             for c in range(COLUMNS):
@@ -711,12 +717,15 @@ class TetrisGUI:
         x0, y0 = c * CELL, r * CELL + yoff
         x1, y1 = x0 + CELL, y0 + CELL
         fill = hex_color(color)
-        self.canvas.create_rectangle(x0 + 1, y0 + 1, x1 - 1, y1 - 1,
-                                     fill=fill, outline=hex_color(self._cell_outline(color)), tags=tag)
+        # 方块本体：切角（圆角）正方形
+        self._round_rect(self.canvas, x0 + 1, y0 + 1, x1 - 1, y1 - 1, CELL_RADIUS,
+                         fill=fill, outline=hex_color(self._cell_outline(color)),
+                         tags=tag, steps=3)
         # 高光
-        self.canvas.create_rectangle(x0 + 5, y0 + 5, x1 - 5, y1 - 5,
-                                     outline=hex_color(tuple(min(255, v + 50) for v in color)),
-                                     tags=tag)
+        self._round_rect(self.canvas, x0 + 5, y0 + 5, x1 - 5, y1 - 5, CELL_RADIUS - 2,
+                         fill="",
+                         outline=hex_color(tuple(min(255, v + 50) for v in color)),
+                         tags=tag, steps=3)
 
     def _color_of(self, name):
         """按当前主题返回方块的 RGB 颜色。"""
@@ -736,14 +745,16 @@ class TetrisGUI:
         bx = (PANEL_W - 4 * 22) // 2
         by = 40
         for rect in self.next_rects:
-            self.panel.coords(rect, 0, 0, 0, 0)
-        for i, (dx, dy) in enumerate(cells):
+            self.panel.delete(rect)
+        self.next_rects = []
+        col = self._color_of(np.name)
+        for (dx, dy) in cells:
             x0 = bx + dx * 22
             y0 = by + dy * 22
-            self.panel.coords(self.next_rects[i], x0, y0, x0 + 20, y0 + 20)
-            col = self._color_of(np.name)
-            self.panel.itemconfig(self.next_rects[i], fill=hex_color(col),
-                                  outline=hex_color(self._cell_outline(col)))
+            self.next_rects.append(self._round_rect(
+                self.panel, x0, y0, x0 + 20, y0 + 20, 5,
+                fill=hex_color(col), outline=hex_color(self._cell_outline(col)),
+                tags="np", steps=3))
         self.panel.itemconfig("title", fill=THEMES[self.theme]["title"])
         self.panel.itemconfig(self.score_var, text=f"分数  {g.score}",
                               fill=THEMES[self.theme]["text"])
