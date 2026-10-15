@@ -32,7 +32,7 @@ from tkinter import messagebox
 COLUMNS = 10          # 游戏区列数
 ROWS = 20             # 游戏区行数
 CELL = 30             # 每个格子像素大小
-CELL_RADIUS = 6       # 方块格子的圆角半径（切角大小）
+CELL_CUT = 6          # 方块格子的切角大小（四角按 45° 直线切掉，呈八边形）
 PANEL_W = 180         # 右侧信息面板宽度
 
 # 7 种方块颜色 (Tetromino)
@@ -123,7 +123,7 @@ THEMES = {
 # ----------------------------- 设置（本地记忆） -----------------------------
 SETTINGS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                              "tetris_settings.json")
-DEFAULT_SETTINGS = {"particle_count": 3, "theme": "classic"}
+DEFAULT_SETTINGS = {"particle_count": 3, "theme": "classic", "cell_cut": CELL_CUT}
 
 
 def load_settings():
@@ -137,6 +137,8 @@ def load_settings():
     try:
         if isinstance(data.get("particle_count"), int):
             s["particle_count"] = max(0, min(12, int(data["particle_count"])))
+        if isinstance(data.get("cell_cut"), int):
+            s["cell_cut"] = max(0, min(12, int(data["cell_cut"])))
         if data.get("theme") in THEMES:
             s["theme"] = data["theme"]
     except Exception:
@@ -337,6 +339,7 @@ class TetrisGUI:
         self.game = Tetris()
         self.particles = []        # 消行粒子特效
         self.particle_count = self.settings["particle_count"]  # 每格粒子数（0=关闭）
+        self.cell_cut = self.settings["cell_cut"]              # 方块四角切角大小（像素）
         self.started = False       # 是否已进入游戏（点击“开始游戏”后变 True）
         self.settings_open = False  # 设置窗口是否打开（打开时方块不下降）
         self._btn_active = {}       # 圆角按钮 id -> 悬停高亮色
@@ -438,6 +441,23 @@ class TetrisGUI:
         if tags is not None:
             kw["tags"] = tags
         return canvas.create_polygon(pts, **kw)
+
+    def _octagon_points(self, x0, y0, x1, y1, cut):
+        """返回八边形顶点列表：正方形四角按 45° 直线切掉 cut 像素。"""
+        cut = min(cut, (x1 - x0) / 2, (y1 - y0) / 2)
+        return [(x0 + cut, y0), (x1 - cut, y0),
+                (x1, y0 + cut), (x1, y1 - cut),
+                (x1 - cut, y1), (x0 + cut, y1),
+                (x0, y1 - cut), (x0, y0 + cut)]
+
+    def _octagon(self, canvas, x0, y0, x1, y1, cut, fill="#000000",
+                 outline=None, width=1, tags=None):
+        """在 canvas 上创建八边形多边形（切角为直线，不是圆弧）。"""
+        kw = {"fill": fill, "outline": fill if outline is None else outline,
+              "width": width}
+        if tags is not None:
+            kw["tags"] = tags
+        return canvas.create_polygon(self._octagon_points(x0, y0, x1, y1, cut), **kw)
 
     def _make_round_button(self, canvas, cx, cy, w, h, text="", which=None,
                            fill=None, fg=None, active=None, command=None,
@@ -557,7 +577,7 @@ class TetrisGUI:
         self._render()
 
     def _open_settings(self):
-        """打开设置窗口：调整粒子数量、切换彩色/黑白模式，并记忆到本地。
+        """打开设置窗口：调整粒子数量、方块切口大小、切换彩色/黑白模式，并记忆到本地。
         打开期间方块不下降（settings_open 标志让主循环跳过下落）。"""
         self.settings_open = True
 
@@ -618,6 +638,34 @@ class TetrisGUI:
         rb_c.pack(anchor="w", pady=2)
         rb_b.pack(anchor="w", pady=2)
 
+        # 方块切口大小（切角）
+        f3 = tk.Frame(win, bg="#191921")
+        f3.pack(pady=8, padx=22, fill="x")
+        tk.Label(f3, text="方块切口大小（四角切掉的长度）", font=F(12),
+                 fg="#cfcfd8", bg="#191921").pack(anchor="w")
+        inner = tk.Frame(f3, bg="#191921")
+        inner.pack(fill="x")
+        cut_var = tk.IntVar(value=self.cell_cut)
+        sl = tk.Scale(inner, from_=0, to=12, orient="horizontal", variable=cut_var,
+                      bg="#191921", fg="#ffffff", font=F(11), highlightthickness=0,
+                      troughcolor="#378ADD", length=170, sliderrelief="flat")
+        sl.pack(side="left", fill="x", expand=True, pady=(2, 0))
+        pcv = tk.Canvas(inner, width=44, height=44, bg="#191921",
+                        highlightthickness=0)
+        pcv.pack(side="right", padx=(6, 0))
+        cut_lbl = tk.Label(f3, text="", font=F(11), fg="#9a9aa8", bg="#191921")
+        cut_lbl.pack(anchor="w")
+
+        def _draw_preview():
+            cut = max(0, min(12, int(cut_var.get())))
+            pcv.delete("all")
+            pts = self._octagon_points(4, 4, 40, 40, cut)
+            pcv.create_polygon(pts, fill="#F0F000", outline="#141414", width=1)
+            cut_lbl.config(text="当前：%d px（0 = 直角方块）" % cut)
+
+        cut_var.trace_add("write", lambda *_: _draw_preview())
+        _draw_preview()
+
         # 确认 / 取消（圆角按钮，配色随当前主题）
         bf = tk.Canvas(win, width=240, height=46, bg="#191921",
                        highlightthickness=0)
@@ -630,6 +678,8 @@ class TetrisGUI:
         def _on_ok():
             self.particle_count = max(0, min(12, int(count_var.get())))
             self.settings["particle_count"] = self.particle_count
+            self.cell_cut = max(0, min(12, int(cut_var.get())))
+            self.settings["cell_cut"] = self.cell_cut
             new_theme = "dark" if mode_var.get() == "黑白" else "classic"
             self.settings["theme"] = new_theme
             save_settings(self.settings)
@@ -673,11 +723,11 @@ class TetrisGUI:
             for (x, y) in g.current.cells():
                 yy = y + gy
                 if yy >= 0:
-                    self._round_rect(
+                    self._octagon(
                         self.canvas, x * CELL + 2, yy * CELL + 2,
-                        x * CELL + CELL - 2, yy * CELL + CELL - 2, CELL_RADIUS - 2,
+                        x * CELL + CELL - 2, yy * CELL + CELL - 2, self.cell_cut - 2,
                         fill="", outline=hex_color(self._color_of(g.current.name)),
-                        width=1, tags="ghost", steps=3)
+                        width=1, tags="ghost")
         # 已固定方块
         for r in range(ROWS):
             for c in range(COLUMNS):
@@ -717,15 +767,15 @@ class TetrisGUI:
         x0, y0 = c * CELL, r * CELL + yoff
         x1, y1 = x0 + CELL, y0 + CELL
         fill = hex_color(color)
-        # 方块本体：切角（圆角）正方形
-        self._round_rect(self.canvas, x0 + 1, y0 + 1, x1 - 1, y1 - 1, CELL_RADIUS,
-                         fill=fill, outline=hex_color(self._cell_outline(color)),
-                         tags=tag, steps=3)
+        # 方块本体：切角正方形（八边形，四角为 45° 直线切口）
+        self._octagon(self.canvas, x0 + 1, y0 + 1, x1 - 1, y1 - 1, self.cell_cut,
+                      fill=fill, outline=hex_color(self._cell_outline(color)),
+                      tags=tag)
         # 高光
-        self._round_rect(self.canvas, x0 + 5, y0 + 5, x1 - 5, y1 - 5, CELL_RADIUS - 2,
-                         fill="",
-                         outline=hex_color(tuple(min(255, v + 50) for v in color)),
-                         tags=tag, steps=3)
+        self._octagon(self.canvas, x0 + 5, y0 + 5, x1 - 5, y1 - 5, self.cell_cut - 2,
+                      fill="",
+                      outline=hex_color(tuple(min(255, v + 50) for v in color)),
+                      tags=tag)
 
     def _color_of(self, name):
         """按当前主题返回方块的 RGB 颜色。"""
@@ -751,10 +801,10 @@ class TetrisGUI:
         for (dx, dy) in cells:
             x0 = bx + dx * 22
             y0 = by + dy * 22
-            self.next_rects.append(self._round_rect(
-                self.panel, x0, y0, x0 + 20, y0 + 20, 5,
+            self.next_rects.append(self._octagon(
+                self.panel, x0, y0, x0 + 20, y0 + 20, 4,
                 fill=hex_color(col), outline=hex_color(self._cell_outline(col)),
-                tags="np", steps=3))
+                tags="np"))
         self.panel.itemconfig("title", fill=THEMES[self.theme]["title"])
         self.panel.itemconfig(self.score_var, text=f"分数  {g.score}",
                               fill=THEMES[self.theme]["text"])

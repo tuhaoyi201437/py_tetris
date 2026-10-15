@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 214" width="680" height="214" role="img">
   <title>俄罗斯方块七种形状与颜色对应</title>
   <desc>每种形状固定一种经典颜色：I青、O黄、T紫、S绿、Z红、J蓝、L橙。形状与颜色一一对应，因此不存在「某颜色 + 另一形状」的组合方块。</desc>
-  <text x="340" y="34" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="500" fill="#1a1a1a">7 种方块：形状 ↔ 颜色 一一对应（经典配色）</text>
+  <text x="340" y="34" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="500" fill="#ffffff">7 种方块：形状 ↔ 颜色 一一对应（经典配色）</text>
 
   <rect x="40" y="82" width="84" height="132" rx="8" fill="#f5f5f7" stroke="#e2e2e6"/>
   <rect x="124" y="82" width="84" height="132" rx="8" fill="#f5f5f7" stroke="#e2e2e6"/>
@@ -11,52 +11,52 @@
   <rect x="460" y="82" width="84" height="132" rx="8" fill="#f5f5f7" stroke="#e2e2e6"/>
   <rect x="544" y="82" width="84" height="132" rx="8" fill="#f5f5f7" stroke="#e2e2e6"/>
 
-  <rect x="50" y="100" width="16" height="16" rx="3" fill="#00F0F0"/>
-  <rect x="66" y="100" width="16" height="16" rx="3" fill="#00F0F0"/>
-  <rect x="82" y="100" width="16" height="16" rx="3" fill="#00F0F0"/>
-  <rect x="98" y="100" width="16" height="16" rx="3" fill="#00F0F0"/>
+  <polygon points="53.4,100 62.6,100 66,103.4 66,112.6 62.6,116 53.4,116 50,112.6 50,103.4" fill="#00F0F0"/>
+  <polygon points="69.4,100 78.6,100 82,103.4 82,112.6 78.6,116 69.4,116 66,112.6 66,103.4" fill="#00F0F0"/>
+  <polygon points="85.4,100 94.6,100 98,103.4 98,112.6 94.6,116 85.4,116 82,112.6 82,103.4" fill="#00F0F0"/>
+  <polygon points="101.4,100 110.6,100 114,103.4 114,112.6 110.6,116 101.4,116 98,112.6 98,103.4" fill="#00F0F0"/>
   <text x="82" y="180" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="500" fill="#1a1a1a">I</text>
   <text x="82" y="200" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#555">青色</text>
 
-  <rect x="150" y="100" width="16" height="16" rx="3" fill="#F0F000"/>
-  <rect x="166" y="100" width="16" height="16" rx="3" fill="#F0F000"/>
-  <rect x="150" y="116" width="16" height="16" rx="3" fill="#F0F000"/>
-  <rect x="166" y="116" width="16" height="16" rx="3" fill="#F0F000"/>
+  <polygon points="153.4,100 162.6,100 166,103.4 166,112.6 162.6,116 153.4,116 150,112.6 150,103.4" fill="#F0F000"/>
+  <polygon points="169.4,100 178.6,100 182,103.4 182,112.6 178.6,116 169.4,116 166,112.6 166,103.4" fill="#F0F000"/>
+  <polygon points="153.4,116 162.6,116 166,119.4 166,128.6 162.6,132 153.4,132 150,128.6 150,119.4" fill="#F0F000"/>
+  <polygon points="169.4,116 178.6,116 182,119.4 182,128.6 178.6,132 169.4,132 166,128.6 166,119.4" fill="#F0F000"/>
   <text x="166" y="180" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="500" fill="#1a1a1a">O</text>
   <text x="166" y="200" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#555">黄色</text>
 
-  <rect x="234" y="100" width="16" height="16" rx="3" fill="#AA00F0"/>
-  <rect x="218" y="116" width="16" height="16" rx="3" fill="#AA00F0"/>
-  <rect x="234" y="116" width="16" height="16" rx="3" fill="#AA00F0"/>
-  <rect x="250" y="116" width="16" height="16" rx="3" fill="#AA00F0"/>
+  <polygon points="237.4,100 246.6,100 250,103.4 250,112.6 246.6,116 237.4,116 234,112.6 234,103.4" fill="#AA00F0"/>
+  <polygon points="221.4,116 230.6,116 234,119.4 234,128.6 230.6,132 221.4,132 218,128.6 218,119.4" fill="#AA00F0"/>
+  <polygon points="237.4,116 246.6,116 250,119.4 250,128.6 246.6,132 237.4,132 234,128.6 234,119.4" fill="#AA00F0"/>
+  <polygon points="253.4,116 262.6,116 266,119.4 266,128.6 262.6,132 253.4,132 250,128.6 250,119.4" fill="#AA00F0"/>
   <text x="250" y="180" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="500" fill="#1a1a1a">T</text>
   <text x="250" y="200" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#555">紫色</text>
 
-  <rect x="318" y="100" width="16" height="16" rx="3" fill="#00F000"/>
-  <rect x="334" y="100" width="16" height="16" rx="3" fill="#00F000"/>
-  <rect x="302" y="116" width="16" height="16" rx="3" fill="#00F000"/>
-  <rect x="318" y="116" width="16" height="16" rx="3" fill="#00F000"/>
+  <polygon points="321.4,100 330.6,100 334,103.4 334,112.6 330.6,116 321.4,116 318,112.6 318,103.4" fill="#00F000"/>
+  <polygon points="337.4,100 346.6,100 350,103.4 350,112.6 346.6,116 337.4,116 334,112.6 334,103.4" fill="#00F000"/>
+  <polygon points="305.4,116 314.6,116 318,119.4 318,128.6 314.6,132 305.4,132 302,128.6 302,119.4" fill="#00F000"/>
+  <polygon points="321.4,116 330.6,116 334,119.4 334,128.6 330.6,132 321.4,132 318,128.6 318,119.4" fill="#00F000"/>
   <text x="334" y="180" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="500" fill="#1a1a1a">S</text>
   <text x="334" y="200" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#555">绿色</text>
 
-  <rect x="386" y="100" width="16" height="16" rx="3" fill="#F00000"/>
-  <rect x="402" y="100" width="16" height="16" rx="3" fill="#F00000"/>
-  <rect x="402" y="116" width="16" height="16" rx="3" fill="#F00000"/>
-  <rect x="418" y="116" width="16" height="16" rx="3" fill="#F00000"/>
+  <polygon points="389.4,100 398.6,100 402,103.4 402,112.6 398.6,116 389.4,116 386,112.6 386,103.4" fill="#F00000"/>
+  <polygon points="405.4,100 414.6,100 418,103.4 418,112.6 414.6,116 405.4,116 402,112.6 402,103.4" fill="#F00000"/>
+  <polygon points="405.4,116 414.6,116 418,119.4 418,128.6 414.6,132 405.4,132 402,128.6 402,119.4" fill="#F00000"/>
+  <polygon points="421.4,116 430.6,116 434,119.4 434,128.6 430.6,132 421.4,132 418,128.6 418,119.4" fill="#F00000"/>
   <text x="402" y="180" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="500" fill="#1a1a1a">Z</text>
   <text x="402" y="200" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#555">红色</text>
 
-  <rect x="470" y="100" width="16" height="16" rx="3" fill="#0064F0"/>
-  <rect x="470" y="116" width="16" height="16" rx="3" fill="#0064F0"/>
-  <rect x="486" y="116" width="16" height="16" rx="3" fill="#0064F0"/>
-  <rect x="502" y="116" width="16" height="16" rx="3" fill="#0064F0"/>
+  <polygon points="473.4,100 482.6,100 486,103.4 486,112.6 482.6,116 473.4,116 470,112.6 470,103.4" fill="#0064F0"/>
+  <polygon points="473.4,116 482.6,116 486,119.4 486,128.6 482.6,132 473.4,132 470,128.6 470,119.4" fill="#0064F0"/>
+  <polygon points="489.4,116 498.6,116 502,119.4 502,128.6 498.6,132 489.4,132 486,128.6 486,119.4" fill="#0064F0"/>
+  <polygon points="505.4,116 514.6,116 518,119.4 518,128.6 514.6,132 505.4,132 502,128.6 502,119.4" fill="#0064F0"/>
   <text x="502" y="180" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="500" fill="#1a1a1a">J</text>
   <text x="502" y="200" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#555">蓝色</text>
 
-  <rect x="586" y="100" width="16" height="16" rx="3" fill="#F0A000"/>
-  <rect x="554" y="116" width="16" height="16" rx="3" fill="#F0A000"/>
-  <rect x="570" y="116" width="16" height="16" rx="3" fill="#F0A000"/>
-  <rect x="586" y="116" width="16" height="16" rx="3" fill="#F0A000"/>
+  <polygon points="589.4,100 598.6,100 602,103.4 602,112.6 598.6,116 589.4,116 586,112.6 586,103.4" fill="#F0A000"/>
+  <polygon points="557.4,116 566.6,116 570,119.4 570,128.6 566.6,132 557.4,132 554,128.6 554,119.4" fill="#F0A000"/>
+  <polygon points="573.4,116 582.6,116 586,119.4 586,128.6 582.6,132 573.4,132 570,128.6 570,119.4" fill="#F0A000"/>
+  <polygon points="589.4,116 598.6,116 602,119.4 602,128.6 598.6,132 589.4,132 586,128.6 586,119.4" fill="#F0A000"/>
   <text x="586" y="180" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="500" fill="#1a1a1a">L</text>
   <text x="586" y="200" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#555">橙色</text>
 </svg>
