@@ -1,8 +1,0 @@
-@"
-.workbuddy/
-tetris_settings.json
-__pycache__/
-*.pyc
-_*.py
-_bak_*.json
-"@ | Set-Content -Encoding utf8 .gitignore
